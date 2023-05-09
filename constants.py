@@ -1,3 +1,4 @@
+import pickle
 import torch
 import numpy as np
 import pandas as pd
@@ -13,3 +14,9 @@ transform = transforms.Compose([
         std=[0.229, 0.224, 0.225]
     )
 ])
+
+
+# open the file for reading binary data
+with open('xgb_feature_names.pkl', 'rb') as f:
+    # read the list from the file using pickle.load()
+    xgb_feature_names = pickle.load(f)
