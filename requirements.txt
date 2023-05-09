@@ -4,5 +4,6 @@ numpy
 torch
 pandas
 torchvision
-xgboost
+xgboost==1.7.5
+scikit-learn==1.2.2
 git+https://github.com/PyTorchLightning/pytorch-lightning.git

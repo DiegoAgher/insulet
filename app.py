@@ -18,12 +18,14 @@ model_ld.load_state_dict(checkpoint)
 model_ld.eval()
 
 # Load the saved xgboost from file
-xgbmodel = xgb.Booster(model_file='xgbmodel.bin')
+xgbmodel = xgb.XGBRegressor()
+xgbmodel.load_model("xgbmodel.bin")
 
 test_metadata = pd.read_csv('test.csv')
 test_metadata['date'] = pd.to_datetime(test_metadata['date'])
 test_metadata['year'] = test_metadata['date'].dt.year
 test_metadata['month'] = test_metadata['date'].dt.month
+test_metadata['day_of_week'] = test_metadata['date'].dt.day_of_week
 
 
 # Set page title
@@ -53,22 +55,19 @@ if selected_file:
     with torch.no_grad():
         code = model_ld.encoder(img_tensor).squeeze().numpy()
 
-    st.write(code)
-
     df = pd.DataFrame(data=np.vstack(code).reshape(-1, 1024),
                       columns=[f'code_{i}' for i in range(1024)])
     test_dataset = test_metadata[test_metadata['image']==selected_file]
-    st.write(test_dataset.shape)
     test_dataset = test_dataset[['year','month','bar','day_of_week',
-     'baz', 'xgt', 'qgg', 'lux',
-    'wsg', 'yyz', 'drt', 'gox', 'foo', 'boz', 'fyt', 'lgh', 'hrt',
-    'juu']].copy()
+                                 'baz', 'xgt', 'qgg', 'lux',
+                                 'wsg', 'yyz', 'drt', 'gox', 'foo', 'boz',
+                                  'fyt', 'lgh', 'hrt', 'juu']].copy()
     codes_dataset = pd.concat([df, test_dataset], axis=1)
     codes_dataset = codes_dataset[xgb_feature_names]
-    st.write(codes_dataset.shape)
 
     X = codes_dataset
     preds_test = xgbmodel.predict(X)
+    st.write(code)
     st.write("Model's prediction: ", preds_test[0])
     # TODO: Perform inference on image_np with your ML model and display the results
     # prediction = model.predict(image_np)
