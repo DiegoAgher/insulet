@@ -3,6 +3,7 @@ import pandas as pd
 import xgboost as xgb
 import streamlit as st
 import numpy as np
+import torchvision.utils as vutils
 
 from PIL import Image
 from constants import transform, xgb_feature_names
@@ -11,7 +12,7 @@ from models import ConvVAE
 model_ld = ConvVAE(512)
 
 # Load the checkpoint file
-checkpoint = torch.load('vae_insulet.ckpt')
+checkpoint = torch.load('vae_insulet_80epochs.ckpt')
 
 # Load the model state_dict from the checkpoint
 model_ld.load_state_dict(checkpoint)
@@ -54,6 +55,7 @@ if selected_file:
     img_tensor = transform(image).unsqueeze(0)
     with torch.no_grad():
         code = model_ld.encoder(img_tensor).squeeze().numpy()
+        recon = model_ld(img_tensor).squeeze()
 
     df = pd.DataFrame(data=np.vstack(code).reshape(-1, 1024),
                       columns=[f'code_{i}' for i in range(1024)])
@@ -67,9 +69,14 @@ if selected_file:
 
     X = codes_dataset
     preds_test = xgbmodel.predict(X)
+    st.write("image latents")
     st.write(code)
     st.write("Model's prediction: ", preds_test[0])
-    # TODO: Perform inference on image_np with your ML model and display the results
-    # prediction = model.predict(image_np)
-    # st.write("Prediction:", prediction)
 
+    button = st.button("Show Recon")
+    image = st.empty()
+    if button:
+        with torch.no_grad():
+            recon = np.transpose(recon, (1,2,0))
+
+        st.image(vutils.make_grid(recon, normalize=True).cpu().numpy(), caption="Recon Image")
