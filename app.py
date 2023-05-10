@@ -22,6 +22,7 @@ model_ld.eval()
 xgbmodel = xgb.XGBRegressor()
 xgbmodel.load_model("xgbmodel.bin")
 
+# preprocess data
 test_metadata = pd.read_csv('test.csv')
 test_metadata['date'] = pd.to_datetime(test_metadata['date'])
 test_metadata['year'] = test_metadata['date'].dt.year
@@ -37,21 +38,14 @@ st.set_page_config(page_title="Insulet inference app")
 st.title("Insulet inference app")
 
 files_list = test_metadata['image'].tolist()
-
 selected_file = st.selectbox('Select a file', files_list)
-# Create file uploader
-if selected_file:
-# uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-# If file uploaded
-#if uploaded_file is not None:
+if selected_file:
     # Load image
-    path_selected_file = selected_file
-    image = Image.open(path_selected_file)
+    image = Image.open(selected_file)
 
     # Display image
-    st.image(image, caption="Uploaded Image", use_column_width=True)
-
+    st.image(image, caption="Selected Image", use_column_width=True)
 
     img_tensor = transform(image).unsqueeze(0)
     with torch.no_grad():
@@ -71,7 +65,9 @@ if selected_file:
     X = codes_dataset
     preds_test = xgbmodel.predict(X)
     st.write("image latents")
-    st.write(code)
+    st.write(df)
+    st.write("feats")
+    st.write(X)
     st.write("Model's prediction: ", preds_test[0])
 
     button = st.button("Show Recon")
