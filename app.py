@@ -59,7 +59,7 @@ if selected_file:
                                  'baz', 'xgt', 'qgg', 'lux',
                                  'wsg', 'yyz', 'drt', 'gox', 'foo', 'boz',
                                   'fyt', 'lgh', 'hrt', 'juu'] + interactions].copy()
-    codes_dataset = pd.concat([df, test_dataset], axis=1)
+    codes_dataset = pd.concat([df, test_dataset.reset_index(drop=True)], axis=1)
     codes_dataset = codes_dataset[xgb_feature_names]
 
     X = codes_dataset

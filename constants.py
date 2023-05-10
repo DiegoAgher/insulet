@@ -7,14 +7,13 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
 transform = transforms.Compose([
-    transforms.Resize((128, 128)),  # Resize the image to 224x224
+    transforms.Resize((128, 128)),  # Resize the image to 128x128
     transforms.ToTensor(),         # Convert the image to a PyTorch tensor
     transforms.Normalize(         # Normalize the image with mean and standard deviation
-        mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225]
+        mean=(0.5, 0.5, 0.5),
+        std=(0.5, 0.5, 0.5)
     )
 ])
-
 
 # open the file for reading binary data
 with open('xgb_feature_names.pkl', 'rb') as f:
