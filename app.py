@@ -6,7 +6,7 @@ import numpy as np
 import torchvision.utils as vutils
 
 from PIL import Image
-from constants import transform, xgb_feature_names
+from constants import transform, xgb_feature_names, get_interactions
 from models import ConvVAE
 
 model_ld = ConvVAE(512)
@@ -27,6 +27,7 @@ test_metadata['date'] = pd.to_datetime(test_metadata['date'])
 test_metadata['year'] = test_metadata['date'].dt.year
 test_metadata['month'] = test_metadata['date'].dt.month
 test_metadata['day_of_week'] = test_metadata['date'].dt.day_of_week
+test_metadata, interactions = get_interactions(test_metadata)
 
 
 # Set page title
@@ -63,7 +64,7 @@ if selected_file:
     test_dataset = test_dataset[['year','month','bar','day_of_week',
                                  'baz', 'xgt', 'qgg', 'lux',
                                  'wsg', 'yyz', 'drt', 'gox', 'foo', 'boz',
-                                  'fyt', 'lgh', 'hrt', 'juu']].copy()
+                                  'fyt', 'lgh', 'hrt', 'juu'] + interactions].copy()
     codes_dataset = pd.concat([df, test_dataset], axis=1)
     codes_dataset = codes_dataset[xgb_feature_names]
 

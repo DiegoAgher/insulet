@@ -20,3 +20,13 @@ transform = transforms.Compose([
 with open('xgb_feature_names.pkl', 'rb') as f:
     # read the list from the file using pickle.load()
     xgb_feature_names = pickle.load(f)
+
+def get_interactions(data):
+    interactions = []
+    for col in ['baz', 'fyt', 'lgh']:
+      for col_2 in ['bar',  'xgt', 'qgg', 'lux',
+                    'yyz', 'drt', 'gox', 'foo', 'boz', 'hrt', 'juu']:
+        col_name = '{}_{}'.format(col, col_2)
+        data[col_name] = data[col] * data[col_2]
+        interactions.append(col_name)
+    return data, interactions
